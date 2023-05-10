@@ -33,6 +33,10 @@ class Application(QMainWindow):
         self.en = "abcdefghijklmnopqrstuvwxyz"
         self.num = "0123456789"
         self.abc = [self.ru, self.en]
+        self.ru_ic = 0.0553
+        self.en_ic = 0.0644
+        self.ic = [self.ru_ic, self.en_ic]
+        self.BORDER = 0.95
 
         self.ui.combo_language.view().pressed.connect(lambda x: self.handle_language(x.row()))
         self.ui.btn_analyse.clicked.connect(self.analyse_text)
@@ -43,13 +47,41 @@ class Application(QMainWindow):
     def handle_language(self, x):
         self.ui.line_abc.setText(self.abc[x])
 
-    def analyse_text(self):
+    def index_coincidence(self, message):
+        current_abc = self.ui.line_abc.text()
+        letters_count, length = {char: message.count(char) for char in current_abc}, len(message)
+        if length == 1:
+            return 0
+        return sum([dict.get(letters_count, num, 0) * (dict.get(letters_count, num, 0) - 1) /
+                    (length * (length - 1)) for num in current_abc])
+
+    def get_key(self):
+        ...
+
+    def get_key_length(self):
         if self.ui.combo_method.currentIndex() == self.Method.IC.value:
-            print("IC method")
+            current_ic = self.ui.combo_language.currentIndex()
+            current_abc = self.ui.line_abc.text()
+            ciphertext = self.ui.plain_text.toPlainText().lower()
+            result = {}
+            for i in range(1, len(current_abc)):
+                message = ''.join([ciphertext[k] for k in range(0, len(ciphertext), i)])
+                result[i] = self.index_coincidence(message)
+            key_lengths = [(a, b) for a, b in result.items() if b > (self.ic[current_ic] * self.BORDER)]
+            prob_length = min(key_lengths, key=lambda x: x[0])
+            self.ui.spin_key_len.setValue(prob_length[0])
         elif self.ui.combo_method.currentIndex() == self.Method.AUTO_CORRELATION.value:
             print("AUTO_CORRELATION method")
         elif self.ui.combo_method.currentIndex() == self.Method.KASIKI.value:
             print("KASIKI method")
+
+    def analyse_text(self):
+        if not self.ui.plain_text.toPlainText():
+            return QMessageBox.information(self, "Ошибка", "Неверная длина зашифрованного текста")
+        if not self.ui.line_abc.text():
+            return QMessageBox.information(self, "Ошибка", "Неверная длина алфавита")
+        self.get_key_length()
+        self.get_key()
 
     def decrypt_text(self):
         print("Not implemented")
