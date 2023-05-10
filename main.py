@@ -4,6 +4,10 @@ from ui_mainwindow import Ui_MainWindow
 
 
 class Application(QMainWindow):
+    class Language(Enum):
+        RUSSIAN = 0
+        ENGLISH = 1
+
     class Method(Enum):
         IC = 0
         AUTO_CORRELATION = 1
@@ -30,8 +34,25 @@ class Application(QMainWindow):
         self.num = "0123456789"
         self.abc = [self.ru, self.en]
 
-        self.ui.action_open_cipher.triggered.connect(self.open_text)
-        self.ui.action_save_cipher.triggered.connect(self.save_text)
+        self.ui.combo_language.view().pressed.connect(lambda x: self.handle_language(x.row()))
+        self.ui.btn_analyse.clicked.connect(self.analyse_text)
+        self.ui.btn_decrypt.clicked.connect(self.decrypt_text)
+        self.ui.action_open.triggered.connect(self.open_text)
+        self.ui.action_save.triggered.connect(self.save_text)
+
+    def handle_language(self, x):
+        self.ui.line_abc.setText(self.abc[x])
+
+    def analyse_text(self):
+        if self.ui.combo_method.currentIndex() == self.Method.IC.value:
+            print("IC method")
+        elif self.ui.combo_method.currentIndex() == self.Method.AUTO_CORRELATION.value:
+            print("AUTO_CORRELATION method")
+        elif self.ui.combo_method.currentIndex() == self.Method.KASIKI.value:
+            print("KASIKI method")
+
+    def decrypt_text(self):
+        print("Not implemented")
 
     def open_text(self):
         file_name = QFileDialog.getOpenFileName(self, "Открыть файл", ".", "All Files (*)")

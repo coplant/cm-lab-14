@@ -20,7 +20,6 @@ from PySide6.QtWidgets import (QAbstractItemView, QAbstractScrollArea, QApplicat
                                QSizePolicy, QSpinBox, QTableWidget, QTableWidgetItem,
                                QTextEdit, QWidget)
 
-
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
@@ -28,22 +27,10 @@ class Ui_MainWindow(object):
         MainWindow.resize(750, 433)
         MainWindow.setMinimumSize(QSize(750, 433))
         MainWindow.setMaximumSize(QSize(750, 650))
-        self.action_analyse_text = QAction(MainWindow)
-        self.action_analyse_text.setObjectName(u"action_analyse_text")
-        self.action_decrypt = QAction(MainWindow)
-        self.action_decrypt.setObjectName(u"action_decrypt")
-        self.action_open_freq = QAction(MainWindow)
-        self.action_open_freq.setObjectName(u"action_open_freq")
-        self.action_open_cipher = QAction(MainWindow)
-        self.action_open_cipher.setObjectName(u"action_open_cipher")
-        self.action_save_cipher = QAction(MainWindow)
-        self.action_save_cipher.setObjectName(u"action_save_cipher")
-        self.action_save_freq = QAction(MainWindow)
-        self.action_save_freq.setObjectName(u"action_save_freq")
-        self.action_clear = QAction(MainWindow)
-        self.action_clear.setObjectName(u"action_clear")
-        self.action_analyse_freq = QAction(MainWindow)
-        self.action_analyse_freq.setObjectName(u"action_analyse_freq")
+        self.action_open = QAction(MainWindow)
+        self.action_open.setObjectName(u"action_open")
+        self.action_save = QAction(MainWindow)
+        self.action_save.setObjectName(u"action_save")
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
         self.plain_text = QTextEdit(self.centralwidget)
@@ -79,12 +66,12 @@ class Ui_MainWindow(object):
         self.horizontalFrame.setGeometry(QRect(-30, 360, 811, 291))
         self.horizontalLayout = QHBoxLayout(self.horizontalFrame)
         self.horizontalLayout.setObjectName(u"horizontalLayout")
-        self.combo = QComboBox(self.centralwidget)
-        self.combo.addItem("")
-        self.combo.addItem("")
-        self.combo.addItem("")
-        self.combo.setObjectName(u"combo")
-        self.combo.setGeometry(QRect(10, 10, 221, 21))
+        self.combo_method = QComboBox(self.centralwidget)
+        self.combo_method.addItem("")
+        self.combo_method.addItem("")
+        self.combo_method.addItem("")
+        self.combo_method.setObjectName(u"combo_method")
+        self.combo_method.setGeometry(QRect(10, 10, 221, 21))
         self.line_abc = QLineEdit(self.centralwidget)
         self.line_abc.setObjectName(u"line_abc")
         self.line_abc.setGeometry(QRect(10, 40, 141, 20))
@@ -100,23 +87,23 @@ class Ui_MainWindow(object):
         self.btn_decrypt = QPushButton(self.centralwidget)
         self.btn_decrypt.setObjectName(u"btn_decrypt")
         self.btn_decrypt.setGeometry(QRect(120, 100, 111, 23))
-        self.combo_2 = QComboBox(self.centralwidget)
-        self.combo_2.addItem("")
-        self.combo_2.addItem("")
-        self.combo_2.setObjectName(u"combo_2")
-        self.combo_2.setGeometry(QRect(160, 40, 71, 20))
+        self.combo_language = QComboBox(self.centralwidget)
+        self.combo_language.addItem("")
+        self.combo_language.addItem("")
+        self.combo_language.setObjectName(u"combo_language")
+        self.combo_language.setGeometry(QRect(160, 40, 71, 20))
         MainWindow.setCentralWidget(self.centralwidget)
         self.horizontalFrame.raise_()
         self.plain_text.raise_()
         self.cipher_text.raise_()
         self.table_stats.raise_()
-        self.combo.raise_()
+        self.combo_method.raise_()
         self.line_abc.raise_()
         self.line_key.raise_()
         self.spin_key_len.raise_()
         self.btn_analyse.raise_()
         self.btn_decrypt.raise_()
-        self.combo_2.raise_()
+        self.combo_language.raise_()
         self.menuBar = QMenuBar(MainWindow)
         self.menuBar.setObjectName(u"menuBar")
         self.menuBar.setGeometry(QRect(0, 0, 750, 21))
@@ -125,44 +112,25 @@ class Ui_MainWindow(object):
         MainWindow.setMenuBar(self.menuBar)
 
         self.menuBar.addAction(self.menu_text.menuAction())
-        self.menu_text.addAction(self.action_analyse_text)
-        self.menu_text.addAction(self.action_decrypt)
-        self.menu_text.addSeparator()
-        self.menu_text.addAction(self.action_open_cipher)
-        self.menu_text.addAction(self.action_save_cipher)
+        self.menu_text.addAction(self.action_open)
+        self.menu_text.addAction(self.action_save)
 
         self.retranslateUi(MainWindow)
 
-        self.combo.setCurrentIndex(0)
-        self.combo_2.setCurrentIndex(0)
+        self.combo_method.setCurrentIndex(0)
+        self.combo_language.setCurrentIndex(0)
 
         QMetaObject.connectSlotsByName(MainWindow)
-
     # setupUi
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow",
                                                              u"\u041b\u0430\u0431\u043e\u0440\u0430\u0442\u043e\u0440\u043d\u0430\u044f \u0440\u0430\u0431\u043e\u0442\u0430 14: \u041a\u0440\u0438\u043f\u0442\u043e\u0430\u043d\u0430\u043b\u0438\u0437 \u043f\u043e\u043b\u0438\u0430\u043b\u0444\u0430\u0432\u0438\u0442\u043d\u044b\u0445 \u0448\u0438\u0444\u0440\u043e\u0432",
                                                              None))
-        self.action_analyse_text.setText(QCoreApplication.translate("MainWindow",
-                                                                    u"\u0410\u043d\u0430\u043b\u0438\u0437\u0438\u0440\u043e\u0432\u0430\u0442\u044c",
-                                                                    None))
-        self.action_decrypt.setText(QCoreApplication.translate("MainWindow",
-                                                               u"\u0420\u0430\u0441\u0448\u0438\u0444\u0440\u043e\u0432\u0430\u0442\u044c",
-                                                               None))
-        self.action_open_freq.setText(
+        self.action_open.setText(
             QCoreApplication.translate("MainWindow", u"\u041e\u0442\u043a\u0440\u044b\u0442\u044c", None))
-        self.action_open_cipher.setText(
-            QCoreApplication.translate("MainWindow", u"\u041e\u0442\u043a\u0440\u044b\u0442\u044c", None))
-        self.action_save_cipher.setText(
+        self.action_save.setText(
             QCoreApplication.translate("MainWindow", u"\u0421\u043e\u0445\u0440\u0430\u043d\u0438\u0442\u044c", None))
-        self.action_save_freq.setText(
-            QCoreApplication.translate("MainWindow", u"\u0421\u043e\u0445\u0440\u0430\u043d\u0438\u0442\u044c", None))
-        self.action_clear.setText(
-            QCoreApplication.translate("MainWindow", u"\u041e\u0447\u0438\u0441\u0442\u0438\u0442\u044c", None))
-        self.action_analyse_freq.setText(QCoreApplication.translate("MainWindow",
-                                                                    u"\u0410\u043d\u0430\u043b\u0438\u0437\u0438\u0440\u043e\u0432\u0430\u0442\u044c",
-                                                                    None))
         ___qtablewidgetitem = self.table_stats.horizontalHeaderItem(0)
         ___qtablewidgetitem.setText(
             QCoreApplication.translate("MainWindow", u"\u0421\u0438\u043c\u0432\u043e\u043b", None));
@@ -172,15 +140,15 @@ class Ui_MainWindow(object):
                                        None));
         ___qtablewidgetitem2 = self.table_stats.horizontalHeaderItem(2)
         ___qtablewidgetitem2.setText(QCoreApplication.translate("MainWindow", u"%", None));
-        self.combo.setItemText(0, QCoreApplication.translate("MainWindow",
-                                                             u"\u041c\u0435\u0442\u043e\u0434 \u0438\u043d\u0434\u0435\u043a\u0441\u0430 \u0441\u043e\u0432\u043f\u0430\u0434\u0435\u043d\u0438\u0439",
-                                                             None))
-        self.combo.setItemText(1, QCoreApplication.translate("MainWindow",
-                                                             u"\u0410\u0432\u0442\u043e\u043a\u043e\u0440\u0440\u0435\u043b\u044f\u0446\u0438\u043e\u043d\u043d\u044b\u0439 \u043c\u0435\u0442\u043e\u0434",
-                                                             None))
-        self.combo.setItemText(2, QCoreApplication.translate("MainWindow",
-                                                             u"\u041c\u0435\u0442\u043e\u0434 \u041a\u0430\u0441\u0438\u0441\u043a\u0438",
-                                                             None))
+        self.combo_method.setItemText(0, QCoreApplication.translate("MainWindow",
+                                                                    u"\u041c\u0435\u0442\u043e\u0434 \u0438\u043d\u0434\u0435\u043a\u0441\u0430 \u0441\u043e\u0432\u043f\u0430\u0434\u0435\u043d\u0438\u0439",
+                                                                    None))
+        self.combo_method.setItemText(1, QCoreApplication.translate("MainWindow",
+                                                                    u"\u0410\u0432\u0442\u043e\u043a\u043e\u0440\u0440\u0435\u043b\u044f\u0446\u0438\u043e\u043d\u043d\u044b\u0439 \u043c\u0435\u0442\u043e\u0434",
+                                                                    None))
+        self.combo_method.setItemText(2, QCoreApplication.translate("MainWindow",
+                                                                    u"\u041c\u0435\u0442\u043e\u0434 \u041a\u0430\u0441\u0438\u0441\u043a\u0438",
+                                                                    None))
 
         self.line_abc.setPlaceholderText(
             QCoreApplication.translate("MainWindow", u"\u0410\u043b\u0444\u0430\u0432\u0438\u0442", None))
@@ -191,12 +159,13 @@ class Ui_MainWindow(object):
         self.btn_decrypt.setText(QCoreApplication.translate("MainWindow",
                                                             u"\u0420\u0430\u0441\u0448\u0438\u0444\u0440\u043e\u0432\u0430\u0442\u044c",
                                                             None))
-        self.combo_2.setItemText(0,
-                                 QCoreApplication.translate("MainWindow", u"\u0420\u0443\u0441\u0441\u043a\u0438\u0439",
-                                                            None))
-        self.combo_2.setItemText(1, QCoreApplication.translate("MainWindow",
-                                                               u"\u0410\u043d\u0433\u043b\u0438\u0439\u0441\u043a\u0438\u0439",
-                                                               None))
+        self.combo_language.setItemText(0, QCoreApplication.translate("MainWindow",
+                                                                      u"\u0420\u0443\u0441\u0441\u043a\u0438\u0439",
+                                                                      None))
+        self.combo_language.setItemText(1, QCoreApplication.translate("MainWindow",
+                                                                      u"\u0410\u043d\u0433\u043b\u0438\u0439\u0441\u043a\u0438\u0439",
+                                                                      None))
 
         self.menu_text.setTitle(QCoreApplication.translate("MainWindow", u"\u0422\u0435\u043a\u0441\u0442", None))
     # retranslateUi
+

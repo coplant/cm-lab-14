@@ -115,7 +115,7 @@
                 </property>
                 <layout class="QHBoxLayout" name="horizontalLayout"/>
             </widget>
-            <widget class="QComboBox" name="combo">
+            <widget class="QComboBox" name="combo_method">
                 <property name="geometry">
                     <rect>
                         <x>10</x>
@@ -205,7 +205,7 @@
                     <string>Расшифровать</string>
                 </property>
             </widget>
-            <widget class="QComboBox" name="combo_2">
+            <widget class="QComboBox" name="combo_language">
                 <property name="geometry">
                     <rect>
                         <x>160</x>
@@ -232,13 +232,13 @@
             <zorder>plain_text</zorder>
             <zorder>cipher_text</zorder>
             <zorder>table_stats</zorder>
-            <zorder>combo</zorder>
+            <zorder>combo_method</zorder>
             <zorder>line_abc</zorder>
             <zorder>line_key</zorder>
             <zorder>spin_key_len</zorder>
             <zorder>btn_analyse</zorder>
             <zorder>btn_decrypt</zorder>
-            <zorder>combo_2</zorder>
+            <zorder>combo_language</zorder>
         </widget>
         <widget class="QMenuBar" name="menuBar">
             <property name="geometry">
@@ -253,52 +253,19 @@
                 <property name="title">
                     <string>Текст</string>
                 </property>
-                <addaction name="action_analyse_text"/>
-                <addaction name="action_decrypt"/>
-                <addaction name="separator"/>
-                <addaction name="action_open_cipher"/>
-                <addaction name="action_save_cipher"/>
+                <addaction name="action_open"/>
+                <addaction name="action_save"/>
             </widget>
             <addaction name="menu_text"/>
         </widget>
-        <action name="action_analyse_text">
-            <property name="text">
-                <string>Анализировать</string>
-            </property>
-        </action>
-        <action name="action_decrypt">
-            <property name="text">
-                <string>Расшифровать</string>
-            </property>
-        </action>
-        <action name="action_open_freq">
+        <action name="action_open">
             <property name="text">
                 <string>Открыть</string>
             </property>
         </action>
-        <action name="action_open_cipher">
-            <property name="text">
-                <string>Открыть</string>
-            </property>
-        </action>
-        <action name="action_save_cipher">
+        <action name="action_save">
             <property name="text">
                 <string>Сохранить</string>
-            </property>
-        </action>
-        <action name="action_save_freq">
-            <property name="text">
-                <string>Сохранить</string>
-            </property>
-        </action>
-        <action name="action_clear">
-            <property name="text">
-                <string>Очистить</string>
-            </property>
-        </action>
-        <action name="action_analyse_freq">
-            <property name="text">
-                <string>Анализировать</string>
             </property>
         </action>
     </widget>
