@@ -22,8 +22,6 @@ class Application(QMainWindow):
 
     def __init__(self):
         super(Application, self).__init__()
-        self.before = ()
-        self.replace = {}
         self.is_decrypted = False
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
@@ -58,6 +56,7 @@ class Application(QMainWindow):
         self.en_ic = 0.0644
         self.ic = [self.ru_ic, self.en_ic]
         self.BORDER = 0.95
+        self.MAX_POSSIBLE_LENGTH = 50
 
         self.ui.combo_language.view().pressed.connect(lambda x: self.handle_language(x.row()))
         self.ui.btn_analyse.clicked.connect(self.analyse_text)
@@ -159,10 +158,10 @@ class Application(QMainWindow):
         self.ui.line_key.setText(result)
 
     def get_key_length(self):
+        current_abc = self.ui.line_abc.text()
+        ciphertext = self.ui.plain_text.toPlainText().lower()
+        current_ic = self.ui.combo_language.currentIndex()
         if self.ui.combo_method.currentIndex() == self.Method.IC.value:
-            current_ic = self.ui.combo_language.currentIndex()
-            current_abc = self.ui.line_abc.text()
-            ciphertext = self.ui.plain_text.toPlainText().lower()
             result = {}
             for i in range(1, len(current_abc)):
                 message = ''.join([ciphertext[k] for k in range(0, len(ciphertext), i)])
@@ -171,7 +170,19 @@ class Application(QMainWindow):
             prob_length = min(key_lengths, key=lambda x: x[0])
             self.ui.spin_key_len.setValue(prob_length[0])
         elif self.ui.combo_method.currentIndex() == self.Method.AUTO_CORRELATION.value:
-            print("AUTO_CORRELATION method")
+            for char in ciphertext:
+                if char not in current_abc:
+                    ciphertext = ciphertext.replace(char, "")
+            for i in range(1, self.MAX_POSSIBLE_LENGTH):
+                text = ciphertext[i:] + ciphertext[:i]
+                coincidences = 0
+                for j in range(len(ciphertext)):
+                    if ciphertext[j] == text[j]:
+                        coincidences += 1
+                index = coincidences / len(ciphertext)
+                if index > (self.ic[current_ic] * self.BORDER):
+                    self.ui.spin_key_len.setValue(i)
+                    return
         elif self.ui.combo_method.currentIndex() == self.Method.KASIKI.value:
             print("KASIKI method")
 
@@ -180,7 +191,6 @@ class Application(QMainWindow):
             return QMessageBox.information(self, "Ошибка", "Неверная длина зашифрованного текста")
         if not self.ui.line_abc.text():
             return QMessageBox.information(self, "Ошибка", "Неверная длина алфавита")
-        text = self.ui.plain_text.toPlainText().lower()
         self.get_key_length()
         self.get_key()
 
