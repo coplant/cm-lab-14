@@ -1,3 +1,4 @@
+import math
 from enum import Enum
 
 from PySide6 import QtCharts, QtCore
@@ -161,6 +162,9 @@ class Application(QMainWindow):
         current_abc = self.ui.line_abc.text()
         ciphertext = self.ui.plain_text.toPlainText().lower()
         current_ic = self.ui.combo_language.currentIndex()
+        for char in ciphertext:
+            if char not in current_abc:
+                ciphertext = ciphertext.replace(char, "")
         if self.ui.combo_method.currentIndex() == self.Method.IC.value:
             result = {}
             for i in range(1, len(current_abc)):
@@ -169,10 +173,8 @@ class Application(QMainWindow):
             key_lengths = [(a, b) for a, b in result.items() if b > (self.ic[current_ic] * self.BORDER)]
             prob_length = min(key_lengths, key=lambda x: x[0])
             self.ui.spin_key_len.setValue(prob_length[0])
+            return
         elif self.ui.combo_method.currentIndex() == self.Method.AUTO_CORRELATION.value:
-            for char in ciphertext:
-                if char not in current_abc:
-                    ciphertext = ciphertext.replace(char, "")
             for i in range(1, self.MAX_POSSIBLE_LENGTH):
                 text = ciphertext[i:] + ciphertext[:i]
                 coincidences = 0
@@ -184,7 +186,45 @@ class Application(QMainWindow):
                     self.ui.spin_key_len.setValue(i)
                     return
         elif self.ui.combo_method.currentIndex() == self.Method.KASIKI.value:
-            print("KASIKI method")
+            if len(ciphertext) < 10:
+                return QMessageBox.information(self, "Ошибка", "Текст слишком короткий")
+            checked = ""
+            possible_lengths = []
+            for i in range(int(len(ciphertext) / 3 - 1)):
+                substring = ciphertext[i:i + 3]
+                if substring not in checked:
+                    times = 0
+                    j = 0
+                    while ciphertext.find(substring, j) != -1:
+                        j = ciphertext.find(substring, j) + 1
+                        times += 1
+                    if times >= 3:
+                        checked += substring + " "
+                        positions_difference = []
+                        previous = ciphertext.find(substring)
+                        j = previous + 1
+                        while ciphertext.find(substring, j) != -1:
+                            current_index = ciphertext.find(substring, j)
+                            positions_difference.append(current_index - 1)
+                            previous = current_index
+                            j = current_index + 1
+                        current_GCD = positions_difference[0]
+                        for k in range(1, len(positions_difference)):
+                            current_GCD = math.gcd(current_GCD, positions_difference[k])
+                        if current_GCD > 1:
+                            possible_lengths.append(current_GCD)
+            if len(possible_lengths):
+                possible_lengths.sort()
+                i = 0
+                possibility = {}
+                while i < len(possible_lengths) and possible_lengths[i] < self.MAX_POSSIBLE_LENGTH:
+                    possibility[possible_lengths[i]] = possibility.get(possible_lengths[i], 0) + 1
+                    i += 1
+                for i in possibility.keys():
+                    possibility[i] *= i
+                max_index = max(possibility.items(), key=lambda x: x[1])[0]
+                self.ui.spin_key_len.setValue(max_index)
+                return
 
     def analyse_text(self):
         if not self.ui.plain_text.toPlainText():
