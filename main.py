@@ -63,6 +63,14 @@ class Application(QMainWindow):
         self.ui.action_save.triggered.connect(self.save_text)
 
     def handle_language(self, x):
+        ru_abc = {k: v for k, v in sorted(self.ru_freq.items(), key=lambda item: item[1], reverse=True)}
+        en_abc = {k: v for k, v in sorted(self.en_freq.items(), key=lambda item: item[1], reverse=True)}
+        if x == self.Language.RUSSIAN.value:
+            if not self.frequency or self.frequency == en_abc:
+                self.frequency = ru_abc
+        elif x == self.Language.ENGLISH.value:
+            if not self.frequency or self.frequency == ru_abc:
+                self.frequency = en_abc
         self.ui.line_abc.setText(self.abc[x])
 
     def index_coincidence(self, message):
@@ -89,6 +97,41 @@ class Application(QMainWindow):
                                             QTableWidgetItem(f"{self.freq_abc[choice].get(letter.lower()) * 100:g}"))
                 index += 1
         self.ui.table_stats.resizeColumnsToContents()
+
+    def draw_chart(self, choice):
+        # построение гистограммы
+        if not self.frequency:
+            return QMessageBox.information(self, "Ошибка", "Некорректные значения частот")
+        layout = self.ui.horizontalLayout.takeAt(0)
+        if layout:
+            layout.widget().deleteLater()
+        self.setFixedHeight(650)
+        axis_x = QtCharts.QBarCategoryAxis()
+        axis_y = QtCharts.QValueAxis()
+        series = QtCharts.QBarSeries()
+        practical = QtCharts.QBarSet("Текущее")
+        practical.setColor(QColor(163, 74, 236, 255))
+        practical.setBorderColor(QColor(255, 255, 255, 255))
+        theory = QtCharts.QBarSet("Ожидаемое")
+        theory.setColor(QColor(98, 235, 56, 255))
+        for i in self.abc[choice]:
+            axis_x.append(i.upper())
+            practical.append(self.text_frequency.get(i)[1])
+            theory.append(self.frequency.get(i))
+        series.append(practical)
+        series.append(theory)
+        chart = QtCharts.QChart()
+        chart.addAxis(axis_x, QtCore.Qt.AlignmentFlag.AlignBottom)
+        chart.addSeries(series)
+        max_value_freq = max(self.frequency.items(), key=lambda x: x[1])[1]
+        max_value_text = max(self.text_frequency.items(), key=lambda x: x[1][1])[1][1]
+        axis_y.setRange(0, max(max_value_freq, max_value_text))
+        chart.addAxis(axis_y, QtCore.Qt.AlignmentFlag.AlignLeft)
+        series.attachAxis(axis_y)
+        chart_view = QtCharts.QChartView(chart)
+        chart_view.setRenderHint(QPainter.Antialiasing)
+        chart_view.chart().setBackgroundBrush(QBrush(QColor(0, 0, 0, 0)))
+        self.ui.horizontalLayout.addWidget(chart_view)
 
     def get_key(self):
         length = self.ui.spin_key_len.value()
@@ -147,7 +190,9 @@ class Application(QMainWindow):
         self.get_key()
 
     def decrypt_text(self):
-        print("Not implemented")
+
+        self.set_text_frequency(self.ui.combo_language.currentIndex())
+        self.draw_chart(self.ui.combo_language.currentIndex())
 
     def open_text(self):
         file_name = QFileDialog.getOpenFileName(self, "Открыть файл", ".", "All Files (*)")
