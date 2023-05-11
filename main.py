@@ -137,7 +137,11 @@ class Application(QMainWindow):
 
     def get_key(self):
         length = self.ui.spin_key_len.value()
+        current_abc = self.ui.line_abc.text()
         ciphertext = self.ui.plain_text.toPlainText().lower()
+        for char in ciphertext:
+            if char not in current_abc:
+                ciphertext = ciphertext.replace(char, "")
         current_abc = self.ui.line_abc.text()
         keys = []
         for k in range(length):
