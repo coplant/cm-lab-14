@@ -1,5 +1,5 @@
 from enum import Enum
-from PySide6.QtWidgets import QApplication, QMainWindow, QFileDialog, QMessageBox
+from PySide6.QtWidgets import QApplication, QMainWindow, QFileDialog, QMessageBox, QTableWidgetItem
 from ui_mainwindow import Ui_MainWindow
 
 
@@ -31,6 +31,24 @@ class Application(QMainWindow):
         self.text_frequency = {}
         self.ru = "абвгдеёжзийклмнопрстуфхцчщшъыьэюя"
         self.en = "abcdefghijklmnopqrstuvwxyz"
+        self.ru_freq = {
+            "а": 0.062, "б": 0.014, "в": 0.038, "г": 0.013, "д": 0.025,
+            "е": 0.072, "ё": 0.00013, "ж": 0.007, "з": 0.016, "и": 0.062,
+            "й": 0.010, "к": 0.028, "л": 0.035, "м": 0.026, "н": 0.053,
+            "о": 0.090, "п": 0.023, "р": 0.040, "с": 0.045, "т": 0.053,
+            "у": 0.021, "ф": 0.002, "х": 0.009, "ц": 0.004, "ч": 0.012,
+            "ш": 0.006, "щ": 0.003, "ъ": 0.014, "ы": 0.016, "ь": 0.014,
+            "э": 0.003, "ю": 0.006, "я": 0.018, " ": 0.175
+        }
+        self.en_freq = {
+            "a": 0.0796, "b": 0.0160, "c": 0.0284, "d": 0.0401, "e": 0.1286,
+            "f": 0.0262, "g": 0.0199, "h": 0.0539, "i": 0.0777, "j": 0.0016,
+            "k": 0.0041, "l": 0.0351, "m": 0.0243, "n": 0.0751, "o": 0.0662,
+            "p": 0.0181, "q": 0.0017, "r": 0.0683, "s": 0.0662, "t": 0.0972,
+            "u": 0.0248, "v": 0.0115, "w": 0.0180, "x": 0.0017, "y": 0.0152,
+            "z": 0.0005
+        }
+        self.freq_abc = [self.ru_freq, self.en_freq]
         self.num = "0123456789"
         self.abc = [self.ru, self.en]
         self.ru_ic = 0.0553
@@ -55,8 +73,47 @@ class Application(QMainWindow):
         return sum([dict.get(letters_count, num, 0) * (dict.get(letters_count, num, 0) - 1) /
                     (length * (length - 1)) for num in current_abc])
 
+    def set_text_frequency(self, choice):
+        self.ui.table_stats.setRowCount(len(self.freq_abc[choice]))
+        index = 0
+        self.before = ([k for k, _ in self.text_frequency.items()], [k for k, _ in self.frequency.items()])
+        for i in range(len(self.text_frequency.items())):
+            text_frequency = list(self.text_frequency.items())
+            if text_frequency[i][0].lower() in self.freq_abc[choice].keys():
+                letter = text_frequency[i][0]
+                count, frequency = text_frequency[i][1]
+                self.ui.table_stats.setItem(index, 0, QTableWidgetItem(letter.upper()))
+                self.ui.table_stats.setItem(index, 1, QTableWidgetItem(f"{count}"))
+                self.ui.table_stats.setItem(index, 2, QTableWidgetItem(f"{frequency * 100:g}"))
+                self.ui.table_stats.setItem(index, 3,
+                                            QTableWidgetItem(f"{self.freq_abc[choice].get(letter.lower()) * 100:g}"))
+                index += 1
+        self.ui.table_stats.resizeColumnsToContents()
+
     def get_key(self):
-        ...
+        length = self.ui.spin_key_len.value()
+        ciphertext = self.ui.plain_text.toPlainText().lower()
+        current_abc = self.ui.line_abc.text()
+        keys = []
+        for k in range(length):
+            temp = ""
+            j = k
+            while j < len(ciphertext):
+                temp += ciphertext[j]
+                j += length
+            keys.append(temp)
+
+        result = ""
+        for i in range(length):
+            times = {current_abc.index(keys[i][j]): keys[i].count(keys[i][j]) for j in range(len(keys[i]))}
+            max_index = max(times.items(), key=lambda x: x[1])[0]
+            # для русского и английского языка
+            default = max(current_abc.lower().find("о"), current_abc.lower().find("e"))
+            if current_abc.find(" ") >= 0:
+                default = current_abc.find(" ")
+            result += current_abc[((max_index - default) + len(current_abc)) % len(current_abc)]
+        self.ui.line_key.setText(result)
+        self.set_text_frequency(self.ui.combo_language.currentIndex())
 
     def get_key_length(self):
         if self.ui.combo_method.currentIndex() == self.Method.IC.value:
@@ -80,6 +137,12 @@ class Application(QMainWindow):
             return QMessageBox.information(self, "Ошибка", "Неверная длина зашифрованного текста")
         if not self.ui.line_abc.text():
             return QMessageBox.information(self, "Ошибка", "Неверная длина алфавита")
+        text = self.ui.plain_text.toPlainText().lower()
+        for abc in self.abc:
+            for char in abc:
+                self.text_frequency[char] = (text.count(char), text.count(char) / len(text))
+        self.text_frequency = {k: v for k, v in
+                               sorted(self.text_frequency.items(), key=lambda item: item[1][1], reverse=True)}
         self.get_key_length()
         self.get_key()
 

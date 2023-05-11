@@ -41,24 +41,26 @@ class Ui_MainWindow(object):
         self.cipher_text.setObjectName(u"cipher_text")
         self.cipher_text.setGeometry(QRect(240, 210, 501, 191))
         self.table_stats = QTableWidget(self.centralwidget)
-        if (self.table_stats.columnCount() < 3):
-            self.table_stats.setColumnCount(3)
+        if (self.table_stats.columnCount() < 4):
+            self.table_stats.setColumnCount(4)
         __qtablewidgetitem = QTableWidgetItem()
         self.table_stats.setHorizontalHeaderItem(0, __qtablewidgetitem)
         __qtablewidgetitem1 = QTableWidgetItem()
         self.table_stats.setHorizontalHeaderItem(1, __qtablewidgetitem1)
         __qtablewidgetitem2 = QTableWidgetItem()
         self.table_stats.setHorizontalHeaderItem(2, __qtablewidgetitem2)
+        __qtablewidgetitem3 = QTableWidgetItem()
+        self.table_stats.setHorizontalHeaderItem(3, __qtablewidgetitem3)
         self.table_stats.setObjectName(u"table_stats")
         self.table_stats.setGeometry(QRect(10, 130, 221, 271))
         self.table_stats.setMouseTracking(True)
-        self.table_stats.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.table_stats.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.table_stats.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContentsOnFirstShow)
         self.table_stats.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.table_stats.setSelectionMode(QAbstractItemView.SingleSelection)
         self.table_stats.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.table_stats.setSortingEnabled(True)
-        self.table_stats.setColumnCount(3)
+        self.table_stats.setColumnCount(4)
         self.table_stats.horizontalHeader().setProperty("showSortIndicator", False)
         self.table_stats.verticalHeader().setVisible(False)
         self.horizontalFrame = QFrame(self.centralwidget)
@@ -120,6 +122,7 @@ class Ui_MainWindow(object):
         self.combo_method.setCurrentIndex(0)
         self.combo_language.setCurrentIndex(0)
 
+
         QMetaObject.connectSlotsByName(MainWindow)
     # setupUi
 
@@ -139,7 +142,11 @@ class Ui_MainWindow(object):
             QCoreApplication.translate("MainWindow", u"\u041a\u043e\u043b\u0438\u0447\u0435\u0441\u0442\u0432\u043e",
                                        None));
         ___qtablewidgetitem2 = self.table_stats.horizontalHeaderItem(2)
-        ___qtablewidgetitem2.setText(QCoreApplication.translate("MainWindow", u"%", None));
+        ___qtablewidgetitem2.setText(
+            QCoreApplication.translate("MainWindow", u"\u0422\u0435\u043a\u0443\u0449\u0435\u0435", None));
+        ___qtablewidgetitem3 = self.table_stats.horizontalHeaderItem(3)
+        ___qtablewidgetitem3.setText(
+            QCoreApplication.translate("MainWindow", u"\u041e\u0436\u0438\u0434\u0430\u0435\u043c\u043e\u0435", None));
         self.combo_method.setItemText(0, QCoreApplication.translate("MainWindow",
                                                                     u"\u041c\u0435\u0442\u043e\u0434 \u0438\u043d\u0434\u0435\u043a\u0441\u0430 \u0441\u043e\u0432\u043f\u0430\u0434\u0435\u043d\u0438\u0439",
                                                                     None))
