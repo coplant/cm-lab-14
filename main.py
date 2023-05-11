@@ -1,4 +1,7 @@
 from enum import Enum
+
+from PySide6 import QtCharts, QtCore
+from PySide6.QtGui import QPainter, QBrush, QColor
 from PySide6.QtWidgets import QApplication, QMainWindow, QFileDialog, QMessageBox, QTableWidgetItem
 from ui_mainwindow import Ui_MainWindow
 
@@ -84,7 +87,6 @@ class Application(QMainWindow):
     def set_text_frequency(self, choice):
         self.ui.table_stats.setRowCount(len(self.freq_abc[choice]))
         index = 0
-        self.before = ([k for k, _ in self.text_frequency.items()], [k for k, _ in self.frequency.items()])
         for i in range(len(self.text_frequency.items())):
             text_frequency = list(self.text_frequency.items())
             if text_frequency[i][0].lower() in self.freq_abc[choice].keys():
@@ -145,7 +147,6 @@ class Application(QMainWindow):
                 temp += ciphertext[j]
                 j += length
             keys.append(temp)
-
         result = ""
         for i in range(length):
             times = {current_abc.index(keys[i][j]): keys[i].count(keys[i][j]) for j in range(len(keys[i]))}
@@ -156,7 +157,6 @@ class Application(QMainWindow):
                 default = current_abc.find(" ")
             result += current_abc[((max_index - default) + len(current_abc)) % len(current_abc)]
         self.ui.line_key.setText(result)
-        self.set_text_frequency(self.ui.combo_language.currentIndex())
 
     def get_key_length(self):
         if self.ui.combo_method.currentIndex() == self.Method.IC.value:
@@ -181,16 +181,44 @@ class Application(QMainWindow):
         if not self.ui.line_abc.text():
             return QMessageBox.information(self, "Ошибка", "Неверная длина алфавита")
         text = self.ui.plain_text.toPlainText().lower()
+        self.get_key_length()
+        self.get_key()
+
+    def get_extended_key(self, data):
+        extended_key = []
+        key = self.ui.line_key.text()
+        index = 0
+        for char in data:
+            is_found = False
+            for abc in self.abc:
+                if char.lower() in abc:
+                    extended_key.append(int(abc.index(key[index % len(key)].lower())))
+                    index += 1
+                    is_found = True
+            if not is_found:
+                extended_key.append(0)
+        return extended_key
+
+    def decrypt_text(self):
+        data = self.ui.plain_text.toPlainText().lower()
+        extended_key = self.get_extended_key(data)
+        text = ''
+        for i, char in enumerate(data):
+            is_found = False
+            for abc in self.abc:
+                if char.lower() in abc:
+                    to_add = abc[
+                        (len(abc) + abc.index(char.lower()) - self.Action.DECRYPT.value * extended_key[i]) % len(abc)]
+                    text += to_add.upper() if char.isupper() else to_add.lower()
+                    is_found = True
+            if not is_found:
+                text += char
         for abc in self.abc:
             for char in abc:
                 self.text_frequency[char] = (text.count(char), text.count(char) / len(text))
         self.text_frequency = {k: v for k, v in
                                sorted(self.text_frequency.items(), key=lambda item: item[1][1], reverse=True)}
-        self.get_key_length()
-        self.get_key()
-
-    def decrypt_text(self):
-
+        self.ui.cipher_text.setText(text)
         self.set_text_frequency(self.ui.combo_language.currentIndex())
         self.draw_chart(self.ui.combo_language.currentIndex())
 
